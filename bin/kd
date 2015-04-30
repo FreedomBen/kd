@@ -1,0 +1,65 @@
+#!/usr/bin/env ruby
+
+require 'colorize'
+require 'kramdown'
+
+def usage
+  puts "Usage:  ".blue + "kd ".cyan + "<input-file-1> [input-file-2] ... ".green + "[-h|--html] [-p|--pdf]".yellow
+end
+
+def check_args(args, *flags)
+  retval = flags.any?{ |f| args.include?(f) }
+  flags.each { |f| args.delete(f) }
+  retval
+end
+
+def check_html(args)
+  check_args(args, '-h', '--html')
+end
+
+def check_pdf(args)
+  check_args(args, '-p', '--pdf')
+end
+
+def check_help(args)
+  check_args(args, '--help')
+end
+
+args = ARGV.dup
+
+if args.count.zero? || check_help(args)
+  usage
+  Process.exit(0)
+end
+
+html = check_html(args)
+pdf = check_pdf(args)
+
+html = pdf = true if !html && !pdf
+
+# all that should be left are files
+unless args.count > 0
+  puts "Error: No input files".red
+  Process.exit(1)
+end
+
+args.each do |input_file|
+  unless File.exists?(input_file)
+    puts "Error processing '#{input_file}'.  File does not exist!".red
+    next
+  end
+
+  k = Kramdown::Document.new(File.read("#{input_file}"))
+
+  if html
+    outfile = "#{input_file.gsub(/\.md$/i, '')}.html"
+    puts "Writing html file '#{outfile}'".green
+    File.write(outfile, k.to_html)
+  end
+
+  if pdf
+    outfile = "#{input_file.gsub(/\.md$/i, '')}.pdf"
+    puts "Writing pdf file '#{outfile}'".green
+    File.write(outfile, k.to_pdf)
+  end
+end
