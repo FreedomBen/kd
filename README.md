@@ -9,3 +9,10 @@ Usage:  Simply pass a list of input files as arguments, and `kd` will convert th
     kd <input-file-1> [input-file-2] ... [-h|--html] [-p|--pdf]
 
         When provided with no flags (only input files), both html and pdf will be generated
+
+Examples:
+
+    kd doc1.md                 # converts doc1.md to doc1.html and doc1.pdf
+    kd doc1.md --pdf           # converts doc1.md to doc1.pdf
+    kd doc1.md --html          # converts doc1.md to doc1.html
+    kd doc1.md doc2.md doc3.md # converts doc1.md, doc2.md, and doc3.md to pdf and html
